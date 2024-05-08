@@ -1,4 +1,4 @@
-# Sample SpringBoot Project + DockerFile + Postgresql
+# Sample SpringBoot API + Docker + PostgreSQL DB
 That is a sample Java springboot API project using H2 database memory
 
 ## How to use
