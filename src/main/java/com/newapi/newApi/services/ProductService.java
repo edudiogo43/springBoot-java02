@@ -32,9 +32,12 @@ public class ProductService {
     }
 
     public ProductModel update(UUID id, ProductModel productModel){
-        var productFound = findById(productModel.getId());
+        var productFound = findById(id);
         if(productFound == null)
             return null;
+
+        var copyProductModel = productModel;
+        copyProductModel.setId(id);
 
         return productRepository.save(productModel);
     }

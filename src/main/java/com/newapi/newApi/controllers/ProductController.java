@@ -62,13 +62,11 @@ public class ProductController {
     public ResponseEntity<Object> updateProduct(@PathVariable(value="id") UUID id,
                                                 @RequestBody ProductModel productModel) {
         
-        productModel.setId(id);
-        var updated = productService.save(productModel);                                         
+        var updated = productService.update(id, productModel);                                         
 
         if(updated == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found !");
         }
-
         return ResponseEntity.status(HttpStatus.OK).body(productModel);
     }
 
