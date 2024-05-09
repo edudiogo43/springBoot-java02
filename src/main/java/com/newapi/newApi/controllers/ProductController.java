@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.newapi.newApi.exceptions.ProductNotFoundException;
 import com.newapi.newApi.models.ProductModel;
 import com.newapi.newApi.services.ProductService;
 
@@ -53,7 +54,7 @@ public class ProductController {
             product0.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Product listing"));
             return ResponseEntity.status(HttpStatus.OK).body(product0);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found!");
+            throw new ProductNotFoundException();
         }
     }
 
@@ -68,7 +69,7 @@ public class ProductController {
 
         // In case of the product is not found return to the user with 404
         if(foundIt == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found !");
+            throw new ProductNotFoundException();
         }
 
         // In fact now delete the product by its Id
@@ -83,9 +84,9 @@ public class ProductController {
         
         var updated = productService.update(id, productModel);                                         
 
-        if(updated == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found !");
-        }
+        if(updated == null)
+            throw new ProductNotFoundException();
+        
         return ResponseEntity.status(HttpStatus.OK).body(productModel);
     }
 

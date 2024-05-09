@@ -10,7 +10,7 @@ import com.newapi.newApi.models.ProductModel;
 import com.newapi.newApi.repositories.ProductRepository;
 
 @Service
-public class ProductService {
+public class ProductService implements IProductService {
     
     @Autowired
     ProductRepository productRepository;
