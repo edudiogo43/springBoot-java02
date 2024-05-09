@@ -32,7 +32,7 @@ public class ProductController {
         var productList = productService.findAll();
 
         if(productList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productList);
         } else {
             for(ProductModel product : productList) {
                 UUID id = product.getId();
