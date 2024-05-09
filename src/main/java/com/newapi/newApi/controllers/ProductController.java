@@ -1,10 +1,7 @@
 package com.newapi.newApi.controllers;
 
-import java.util.List;
 import java.util.UUID;
 
-import org.apache.catalina.connector.Response;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.newapi.newApi.models.ProductModel;
 import com.newapi.newApi.services.ProductService;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -29,13 +29,32 @@ public class ProductController {
     
     @GetMapping
     public ResponseEntity<Object> getAllProducts() {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
+        var productList = productService.findAll();
+
+        if(productList.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            for(ProductModel product : productList) {
+                UUID id = product.getId();
+
+                // used for Hateoas
+                product.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(productList);
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getOneProduct(@PathVariable(value="id") UUID id) {
-        ProductModel foundIt = productService.findById(id);
-        return foundIt != null ? ResponseEntity.status(HttpStatus.OK).body(foundIt) : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found!");
+
+        ProductModel product0 = productService.findById(id);
+        if(product0 != null){
+            // used for Hateoas
+            product0.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Product listing"));
+            return ResponseEntity.status(HttpStatus.OK).body(product0);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found!");
+        }
     }
 
     @PostMapping
